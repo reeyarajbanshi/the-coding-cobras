@@ -11,17 +11,41 @@ dozer = port.E
 
 motor_pair.pair(motor_pair.PAIR_1,port.A, port.C)
 
-async def forklift_up():
-    motor.run_for_degrees(forklift,250,280)
+async def move_forward(time,steering, velocity):
+    await motor_pair.move_for_time(motor_pair.PAIR_1, time, steering, velocity=velocity)
+    
+async def move_backward(time,steering,velocity):
+    await motor_pair.move_for_time(motor_pair.PAIR_1, time, steering, velocity=velocity)
 
-async def forklift_down():
-    motor.run_for_degrees(forklift,-200,280)
+async def move_left(degree, velocity):
+    await motor.run_for_degrees(right_motor, degrees=degree, velocity=velocity)
 
-async def dozer_up():
-    motor.run_for_degrees(dozer,300,300)
+async def move_right(degree, velocity):
+    await motor.run_for_degrees(left_motor, degrees=degree, velocity=velocity)
 
-async def dozer_down():
-    motor.run_for_degrees(dozer,-300,300)
+async def forklift_up(degree, velocity):
+    motor.run_for_degrees(forklift,degrees=degree,velocity=velocity)
+
+async def forklift_down(degree,velocity):
+    motor.run_for_degrees(forklift,degrees=degree,velocity=velocity)
+
+async def dozer_up(degree, velocity):
+    motor.run_for_degrees(dozer,degrees=degree,velocity=velocity)
+
+async def dozer_down(degree, velocity):
+    motor.run_for_degrees(dozer,degrees=degree,velocity=velocity)
+
+
+
+
+
+
+
+
+
+
+
+
 
 async def mission_1():
     # moving forklift down
