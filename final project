@@ -1,0 +1,132 @@
+from hub import light_matrix
+import motor_pair
+import motor
+import runloop
+from hub import port
+import time
+
+left_motor = port.A
+right_motor = port.C
+forklift = port.F
+dozer = port.E
+
+motor_pair.pair(motor_pair.PAIR_1,port.A, port.C)
+
+
+async def move_forward(time,steering, velocity):
+    await motor_pair.move_for_time(motor_pair.PAIR_1, time, steering, velocity=velocity)
+
+async def move_backward(time,steering,velocity):
+    await motor_pair.move_for_time(motor_pair.PAIR_1, time, steering, velocity=-velocity)
+
+async def move_left(degree, velocity):
+    await motor.run_for_degrees(right_motor, degree, velocity)
+
+async def move_right(degree, velocity):
+    await motor.run_for_degrees(left_motor, degree, -velocity)
+
+async def forklift_up(degree, velocity):
+    await motor.run_for_degrees(forklift,degree,velocity)
+
+async def forklift_down(degree,velocity):
+    await motor.run_for_degrees(forklift,-degree,velocity)
+    
+async def dozer_up(degree, velocity):
+    await motor.run_for_degrees(dozer,degree,velocity)
+
+async def dozer_down(degree, velocity):
+    await motor.run_for_degrees(dozer,-degree, velocity)
+
+async def move_tank(degree, left_velocity, right_velocity):
+    await motor_pair.move_tank_for_degrees(motor_pair.PAIR_1,degree, left_velocity,right_velocity)
+
+
+
+
+
+
+
+
+
+
+
+async def old_mission_1():
+    # moving forklift down
+    await motor.run_for_degrees(forklift,-100, 280)
+    # Move straight at a specific velocity for 1 second; moves forward
+    await motor_pair.move_for_time(motor_pair.PAIR_1,1000,0,velocity=280)
+    # Run at 1000 velocity for 0.5 seconds; moving left
+    await motor.run_for_time(right_motor, 300,300)
+    # moves straight at angle
+    await motor_pair.move_for_time(motor_pair.PAIR_1,750, 0, velocity=280)
+    # turning right
+    await motor.run_for_time(left_motor,300,-400)
+    # move backwards
+    await motor_pair.move_for_time(motor_pair.PAIR_1,1750,0,velocity=-280)
+    # forklift up
+    await forklift_up(180,280)
+
+
+
+
+
+async def mission_1():
+    # forklift down
+    await forklift_down(180,280)
+    # move forward
+    await move_forward(1750,0,280)
+    # sleep for 0.5 seconds
+    time.sleep_ms(500)
+    # move right
+    await move_right(500,400)
+    # move backward
+    await move_backward(1750,0,280)
+    # forklift up
+    await forklift_up(150,280)
+
+async def mission_2():
+    # moving robot forward to reach theater scene change
+    await move_forward(3000,0,300)
+    # turning left
+    await move_left(185,280)
+    # move backward
+    await move_backward(1000,0,280)
+    # move forward
+    await move_forward(1500,0,280)
+    # move backward
+    await move_backward(1000,0,280)
+    # move forward 
+    await move_forward(1075,0,300)
+    # move backward
+    await move_backward(1000,0,280)
+    # move forward
+    await move_forward(1100,0,325)
+    # move backward
+    await move_backward(1000,0,280)
+
+async def transition_code():
+    await move_right(180,280)
+
+async def mission_3():
+    await forklift_up(280,280)
+    # moving forward toward tallest mission
+    await motor_pair.move_for_time(motor_pair.PAIR_1,3000,0,velocity=280)
+    # turning left towards mission 3
+    await move_left(178,280)
+    # moving forward toward mission 3
+    await move_forward(1500,0,280)
+    # moving forklift down to complete mission
+    await forklift_down(280,280)
+    # move forklift up to complete
+    await forklift_up(280,280)
+
+async def mission_10():
+    await forklift_up(100,280)
+    await forklift_down(200,280)
+    await move_forward(2200,0,280)
+    await forklift_up(100,280)
+    await move_forward(1000,0,280)
+    await forklift_up(100,280)
+    await move_backward(2000,0,280)
+
+runloop.run(move_tank(100,280,-280))
